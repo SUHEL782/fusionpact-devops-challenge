@@ -1,4 +1,4 @@
-name: Fusionpact CI/CD Pipeline
+name: ci/cd pipeline
 
 on:
   push:
@@ -11,41 +11,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      # Step 1: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      # Step 2: Set up Docker Buildx
+      - name: set up docker buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
+      # Step 3: Log in to Docker Hub
+      - name: log in to docker hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.dockerhub_username }}
+          password: ${{ secrets.dockerhub_token }}
 
-      - name: Build and Push Backend Image
+      # Step 4: Build and Push Backend Image
+      - name: build and push backend image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fusionpact-backend:latest
+          tags: ${{ secrets.dockerhub_username }}/fusionpact-backend:latest
 
-      - name: Build and Push Frontend Image
+      # Step 5: Build and Push Frontend Image
+      - name: build and push frontend image
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fusionpact-frontend:latest
+          tags: ${{ secrets.dockerhub_username }}/fusionpact-frontend:latest
 
-      - name: Deploy on EC2
+      # Step 6: Deploy on EC2
+      - name: deploy on ec2
         uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.ec2_host }}
+          username: ${{ secrets.ec2_user }}
+          key: ${{ secrets.ec2_ssh_key }}
           script: |
             cd ~/fusionpact-devops-challenge
             sudo docker compose down
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fusionpact-backend:latest
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fusionpact-frontend:latest
+            sudo docker pull ${{ secrets.dockerhub_username }}/fusionpact-backend:latest
+            sudo docker pull ${{ secrets.dockerhub_username }}/fusionpact-frontend:latest
             sudo docker compose up -d --build
