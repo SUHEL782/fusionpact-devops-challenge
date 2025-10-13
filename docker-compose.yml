@@ -1,13 +1,16 @@
 version: "3.9"
 
 services:
+
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: fusionpact_backend
+
     ports:
-      - "8000:8000"
+      - "8000:8000" #backend Port You can real time and test it
     volumes:
       - backend_data:/app/data
     restart: always
@@ -23,7 +26,7 @@ services:
       dockerfile: Dockerfile
     container_name: fusionpact_frontend
     ports:
-      - "80:80"
+      - "80:80"   # root port 
     restart: always
 
   prometheus:
@@ -33,8 +36,11 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+
+
+
     ports:
-      - "9090:9090"
+      - "9090:9090" # You can check real time
     restart: always
     depends_on:
       - backend
@@ -43,7 +49,7 @@ services:
     image: grafana/grafana:latest
     container_name: fusionpact_grafana
     ports:
-      - "3000:3000"
+      - "3000:3000"   # You can check real time
     depends_on:
       - prometheus
     restart: always
@@ -52,13 +58,13 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: fusionpact_cadvisor
     ports:
-      - "8080:8080"
+      - "8080:8080"  # You can check real time
     volumes:
       - /:/rootfs:ro
-      - /var/run:/var/run:rw
+      - /var/run:/var/run:rw    # Please carefuly review this part
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
-    restart: always
+    restart: always # optional
 
 volumes:
   backend_data:
