@@ -50,17 +50,13 @@ steps:
       key: ${{ secrets.EC2_SSH_KEY }}
       script: |
         cd ~/fusionpact-devops-challenge
-
         echo "Pull latest code"
         git pull origin main
-
         echo "Stop old containers"
         docker compose down
-
         echo "Pull latest images"
         docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fusionpact-backend:latest
         docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fusionpact-frontend:latest
-
         echo "Start containers"
         docker compose up -d
 ```
